@@ -154,34 +154,45 @@ namespace MiniTextToSpeech1
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (player.Source != null)
+            if (player.Source == null)
+                return;
+
+            if (!player.CanPause)
             {
-                if (player.CanPause)
-                {
-                    if (player.Position >= player.NaturalDuration.TimeSpan)
-                    {
-                        player.Stop();
-                    }
-                    else if (isPaused)
-                    {
-                        player.Play();
-                        button3.Image = new Bitmap("C:/Users/Vitalik/Downloads/pause (1).png");
-                        isPaused = false;
-                    }
-                    else
-                    {
-                        player.Pause();
-                        button3.Image = new Bitmap("C:/Users/Vitalik/Downloads/play-button-arrowhead.png");
-                        isPaused = true;
-                    }
-                }
-                else
-                {
-                    player.Play();
-                    button3.Image = new Bitmap("C:/Users/Vitalik/Downloads/pause (1).png");
-                    isPaused = false;
-                }
+                StartPlayback();
+                return;
             }
+
+            if (isPaused)
+            {
+                ResumePlayback();
+            }
+            else
+            {
+                PausePlayback();
+            }
+        }
+
+        private void PausePlayback()
+        {
+            player.Pause();
+            button3.Image = new Bitmap("C:/Users/Vitalik/Downloads/play-button-arrowhead.png");
+            isPaused = true;
+        }
+
+        private void ResumePlayback()
+        {
+            player.Play();
+            button3.Image = new Bitmap("C:/Users/Vitalik/Downloads/pause (1).png");
+            isPaused = false;
+        }
+
+        private void StartPlayback()
+        {
+            player.Open(new Uri(GetAudioUrl(richTextBox1.Text, comboBox1.Text.Split(' ')[0]), UriKind.RelativeOrAbsolute));
+            button3.Image = new Bitmap("C:/Users/Vitalik/Downloads/pause (1).png");
+            player.Play();
+            timerDuration.Start();
         }
 
 
@@ -252,6 +263,7 @@ namespace MiniTextToSpeech1
         private void button9_Click(object sender, EventArgs e)
         {
             richTextBox1.Text = string.Empty;
+            player.Stop();
         }
 
         private void ShowCustomMessageBox(string message)
